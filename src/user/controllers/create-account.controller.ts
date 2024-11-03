@@ -1,4 +1,10 @@
-import { Body, ConflictException, Controller, Post } from "@nestjs/common";
+import {
+  Body,
+  ConflictException,
+  Controller,
+  HttpStatus,
+  Post,
+} from "@nestjs/common";
 import { hash } from "bcrypt";
 import { PrismaService } from "src/database/database.service";
 import {
@@ -27,12 +33,17 @@ export class CreateAccountController {
     }
 
     const hashedPassword = await hash(password, 8);
-    return await this.prisma.user.create({
+    await this.prisma.user.create({
       data: {
         email,
         name,
         password: hashedPassword,
       },
     });
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: "User successfully registered!",
+    };
   }
 }
